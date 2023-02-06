@@ -1,10 +1,12 @@
-// Online C++ compiler to run C++ program online
 #include <bits/stdc++.h>
 using namespace std;
 #define computer 'X'
 #define human 'O'
 #define COMPUTER 1
 #define HUMAN 0
+#define EASY 'e'
+#define HARD 'h'
+char difficulty;
 void initialize(char board[3][3])
 {
     for (int i = 0; i < 3; i++)
@@ -80,12 +82,117 @@ bool gameOver(char board[3][3])
 {
     return (rowCrossed(board) || columnCrossed(board) || diagonalCrossed(board));
 }
+int minimax(char board[3][3], int depth, bool isAI)
+{
+    int score = 0;
+    int bestScore = 0;
+    if (gameOver(board) == true)
+    {
+        if (isAI == true)
+        {
+            return -10;
+        }
+        if (isAI == false)
+        {
+            return +10;
+        }
+    }
+    else
+    {
+        if (depth < 9)
+        {
+            if (isAI == true)
+            {
+                // COMPUTER
+                if (difficulty == EASY)
+                {
+                    bestScore = 999;
+                }
+                else
+                {
+                    bestScore = -999;
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        if (board[i][j] == '*')
+                        {
+                            board[i][j] = computer;
+                            score = minimax(board, depth + 1, false);
+                            board[i][j] = '*';
+                            if (score > bestScore)
+                            {
+                                bestScore = score;
+                            }
+                        }
+                    }
+                }
+                return bestScore;
+            }
+            else
+            {
+                // HUMAN
+                if (difficulty == EASY)
+                {
+                    bestScore = 0;
+                }
+                else
+                {
+                    bestScore = 999;
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        if (board[i][j] == '*')
+                        {
+                            board[i][j] = human;
+                            score = minimax(board, depth + 1, true);
+                            board[i][j] = '*';
+                            if (score < bestScore)
+                            {
+
+                                bestScore = score;
+                            }
+                        }
+                    }
+                }
+                return bestScore;
+            }
+        }
+    }
+    return 0;
+}
+int bestMove(char board[3][3], int moveIndex)
+{
+    int x = -1, y = -1;
+    int score = 0, bestScore = -999;
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            if (board[i][j] == '*')
+            {
+                board[i][j] = computer;
+                score = minimax(board, moveIndex + 1, false);
+                board[i][j] = '*';
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    x = i;
+                    y = j;
+                }
+            }
+        }
+    }
+    return x * 3 + y;
+}
 int play(char whoseTurn)
 {
     char board[3][3];
     int cellCnt = 0;
     initialize(board);
-    int k = 0;
     while (cellCnt != 9 && gameOver(board) == false)
     {
         if (whoseTurn == HUMAN)
@@ -112,25 +219,13 @@ int play(char whoseTurn)
         }
         else if (whoseTurn == COMPUTER)
         {
-
+            int k = bestMove(board, cellCnt);
             int i = k / 3;
             int j = k % 3;
-
-            if (board[i][j] == '*')
-            {
-                board[i][j] = computer;
-                print(board);
-                cellCnt++;
-                whoseTurn = HUMAN;
-                k = k + 1;
-            }
-            else
-            {
-                cout << "Invalid input" << endl;
-                cout << "Re-try" << endl;
-                return 0;
-                whoseTurn = COMPUTER;
-            }
+            board[i][j] = computer;
+            print(board);
+            cellCnt++;
+            whoseTurn = HUMAN;
         }
     }
     if (cellCnt < 9 && whoseTurn == HUMAN)
@@ -151,10 +246,23 @@ int start()
 {
     char choice;
     char board[3][3];
+    cout << "\t\t\t\t"
+         << "      Choose Level Difficulty " << endl;
+    cout << "Enter e for EASY \t\t\t Enter h for HARD \t\t\t x to Exit game" << endl;
+    cin >> difficulty;
+
+    if (difficulty == 'x')
+    {
+        return 0;
+    }
+    if (difficulty != EASY && difficulty != HARD)
+    {
+        cout << "Invalid Input" << endl;
+        cout << "Re-try" << endl;
+        start();
+    }
     cout << "Wanna start first ??" << endl;
-    cout << "Enter y for yes " << endl;
-    cout << "Enter n for no " << endl;
-    cout << "Enter x to end game " << endl;
+    cout << "Enter y for yes \t\t\t n for no \t\t\t x to Exit game" << endl;
     cin >> choice;
     if (choice == 'y')
     {
@@ -164,7 +272,7 @@ int start()
     else if (choice == 'n')
     {
         instruction();
-        play(computer);
+        play(COMPUTER);
     }
     else if (choice == 'x')
     {
@@ -178,10 +286,25 @@ int start()
     }
     return 0;
 }
+void intro()
+{
+    cout << "================================================================================" << endl;
+    cout << endl;
+    cout << "**************          **************             **************         " << endl;
+    cout << "**************          **************             **************         " << endl;
+    cout << "     **                       **                         **               " << endl;
+    cout << "     **   **     ****         **   ****      ****        **   ***   ******" << endl;
+    cout << "     **        ***            **  *    *   ***           **  *   *  **    " << endl;
+    cout << "     **   **  ***     ***     **  ******  ***     ***    **  *   *  ****  " << endl;
+    cout << "     **   **   ***            **  *    *   ***           **  *   *  **    " << endl;
+    cout << "     **   **     ****         **  *    *     ****        **   ***   ******" << endl;
+    cout << endl;
+    cout << "================================================================================" << endl;
+}
 int main()
 {
-    // initialize(board);
+    intro();
     start();
-    // printboard(board);
+    main();
     return 0;
 }
