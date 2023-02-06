@@ -193,6 +193,27 @@ int play(char whoseTurn)
     char board[3][3];
     int cellCnt = 0;
     initialize(board);
+    if(cellCnt==0 && whoseTurn == COMPUTER){
+        int n=time(NULL)%10;
+        if(n != 0){
+        int i = n / 3;
+        int j = n % 3;
+        board[i][j] = computer;
+        print(board);
+        cellCnt++;
+        whoseTurn = HUMAN;
+        }
+    }    
+        else if(cellCnt==0 && whoseTurn == COMPUTER){
+            int n=time(NULL)%10;
+            int i = (n+2) / 3;
+            int j = (n+2) % 3;
+            board[i][j] = computer;
+            print(board);
+            cellCnt++;
+            whoseTurn = HUMAN;
+        }
+    
     while (cellCnt != 9 && gameOver(board) == false)
     {
         if (whoseTurn == HUMAN)
@@ -230,15 +251,16 @@ int play(char whoseTurn)
     }
     if (cellCnt < 9 && whoseTurn == HUMAN)
     {
-        cout << "COMPUTER wins" << endl;
+        cout << "COMPUTER WINS" << endl;
     }
     else if (cellCnt < 9 && whoseTurn == COMPUTER)
     {
-        cout << "HUMAN wins" << endl;
+        cout << "EREN YEAGER'S DREAM COMES TRUE" << endl;
+        cout << "HUMANITY WINS" << endl;
     }
     else
     {
-        cout << "DRAW" << endl;
+        cout << "IT'S A DRAW" << endl;
     }
     return 0;
 }
@@ -246,22 +268,16 @@ int start()
 {
     char choice;
     char board[3][3];
-    cout << "\t\t\t\t"
-         << "      Choose Level Difficulty " << endl;
-    cout << "Enter e for EASY \t\t\t Enter h for HARD \t\t\t x to Exit game" << endl;
+    cout << "\t\t"<< " Choose Level Difficulty " << endl;
+    cout << "Enter e for EASY \t\t\t Enter h for HARD " << endl;
     cin >> difficulty;
-
-    if (difficulty == 'x')
-    {
-        return 0;
-    }
     if (difficulty != EASY && difficulty != HARD)
     {
         cout << "Invalid Input" << endl;
         cout << "Re-try" << endl;
         start();
     }
-    cout << "Wanna start first ??" << endl;
+    cout << "\t\t"<< " Wanna start first ??" << endl;
     cout << "Enter y for yes \t\t\t n for no \t\t\t x to Exit game" << endl;
     cin >> choice;
     if (choice == 'y')
@@ -305,6 +321,7 @@ int main()
 {
     intro();
     start();
+    cout<<endl;
     main();
     return 0;
 }
